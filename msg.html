@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SMS</title>
+    <style>
+        button{
+            height: 50px;
+            width: 100px;
+            font-family: algerian;
+            font-size: 20px;
+            color: black;
+            background: #fff;
+            border: #cyan;
+            border-radius: 15px;
+            margin: 40px 0 0 30px;
+        }
+        button:hover{
+            background: cyan;
+            box-shadow: 0 0 40px cyan;
+            transition: 60ms ease-in;
+            border: 0px solid cyan;
+        }
+
+    </style>
+    <script>
+        async function sendSMS() {
+            try {
+                const response = await fetch('/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'hello',
+                        phoneNumber: '+9477020184'
+                    })
+                });
+                const result = await response.json();
+                alert(result.message);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to send SMS.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <button onclick="sendSMS()">Send SMS</button>
+</body>
+</html>
