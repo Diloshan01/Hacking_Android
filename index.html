@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Screen Share</title>
+</head>
+<body>
+    <h1>Screen Sharing</h1>
+    <button id="startSharing">Start Sharing</button>
+    <video id="myScreen" autoplay></video>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const startSharingBtn = document.getElementById('startSharing');
+        const myScreenVideo = document.getElementById('myScreen');
+
+        let localStream;
+        let peerConnection;
+
+        // Start screen sharing
+        startSharingBtn.onclick = () => {
+            navigator.mediaDevices.getDisplayMedia({ video: true }).then((stream) => {
+                localStream = stream;
+                myScreenVideo.srcObject = stream;
+
+                peerConnection = new RTCPeerConnection();
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.emit('ice-candidate', event.candidate);
+                    }
+                };
+
+                peerConnection.createOffer().then(offer => {
+                    return peerConnection.setLocalDescription(offer);
+                }).then(() => {
+                    socket.emit('offer', peerConnection.localDescription);
+                });
+            }).catch((err) => {
+                console.error("Error: ", err);
+            });
+        };
+
+        // Handle incoming answer
+        socket.on('answer', (answer) => {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        });
+
+        // Handle incoming ICE candidates
+        socket.on('ice-candidate', (candidate) => {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        });
+    </script>
+</body>
+</html>
