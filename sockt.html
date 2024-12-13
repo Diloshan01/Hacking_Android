@@ -15,18 +15,16 @@
     <script>
         let socket;
 
-        // Connect to the WebSocket server
         function connect() {
-            const serverAddress = "ws://175.157.13.193:8765"; // Replace with server's public IP
+            // Replace YOUR_PUBLIC_IP with your public IP address
+            const serverAddress = "ws://175.157.13.193:8765";
             socket = new WebSocket(serverAddress);
 
-            // Update connection status
             socket.onopen = () => {
                 document.getElementById("status").textContent = "Connected";
                 console.log("Connected to the WebSocket server");
             };
 
-            // Handle incoming messages
             socket.onmessage = (event) => {
                 const messageList = document.getElementById("messages");
                 const listItem = document.createElement("li");
@@ -34,19 +32,16 @@
                 messageList.appendChild(listItem);
             };
 
-            // Handle connection close
             socket.onclose = () => {
                 document.getElementById("status").textContent = "Disconnected";
                 console.log("Disconnected from the server");
             };
 
-            // Handle errors
             socket.onerror = (error) => {
                 console.error("WebSocket error:", error);
             };
         }
 
-        // Send a message to the server
         function sendMessage() {
             const messageInput = document.getElementById("messageInput");
             const message = messageInput.value;
