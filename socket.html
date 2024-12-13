@@ -17,7 +17,9 @@
 
         function connect() {
             // Replace YOUR_PUBLIC_IP with your public IP address
-            const serverAddress = "ws://175.157.13.193:8765";
+        //    const serverAddress = "ws://175.157.13.193:8765";
+            const serverAddress = "ws://175.157.13.193:8765"; // Your public IP and port
+
             socket = new WebSocket(serverAddress);
 
             socket.onopen = () => {
