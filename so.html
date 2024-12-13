@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+</head>
+<body>
+    <h1>Phone WebSocket Client</h1>
+    <p id="status">Connecting...</p>
+    <p>Your IP Address: <span id="ip"></span></p>
+
+    <script>
+        const serverAddress = "ws://<your-public-ip-or-ngrok-url>:8765"; // Update with your public IP or Ngrok URL
+        const socket = new WebSocket(serverAddress);
+
+        socket.onopen = () => {
+            console.log("Connected to server");
+            document.getElementById("status").innerText = "Connected to server!";
+            
+            // Get the phone's IP address
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    const phoneIP = data.ip;
+                    document.getElementById("ip").innerText = phoneIP;
+                    socket.send(phoneIP);  // Send the IP address to the server
+                })
+                .catch(error => {
+                    console.error("Error fetching IP address", error);
+                });
+        };
+
+        socket.onmessage = (event) => {
+            console.log("Message from server: ", event.data);
+            document.getElementById("status").innerText = event.data;
+        };
+
+        socket.onclose = () => {
+            console.log("Disconnected from server");
+            document.getElementById("status").innerText = "Disconnected from server";
+        };
+    </script>
+</body>
+</html>
